@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
- "scripts": {
-  "dev": "nodemon src/index.js",
-  "start": "node src/index.js",
-  "build": "echo 'no build needed'"
-},
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "build": "echo 'no build needed'"
+  },
   "keywords": [],
   "author": "",
   "type": "module",
@@ -18,7 +18,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1",
+    "express": "^4.22.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.1",
     "socket.io": "^4.8.1"
