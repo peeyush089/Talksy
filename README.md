@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ✨ Full Stack Realtime Chat App ✨
 
 ![Demo App](/frontend/public/screenshot-for-readme.png)
@@ -40,3 +41,7 @@ npm run build
 ```shell
 npm start
 ```
+=======
+# Talksy
+💬 Talksy is a modern full-stack real-time chat application built with the MERN stack. It supports instant messaging, media sharing (images, GIFs, voice, video), online/offline presence, and friend request management — all with a responsive, WhatsApp-inspired UI.
+>>>>>>> 72d2baacc6f09e7d937499de5949b40e22972ce8
