@@ -12,27 +12,33 @@ export const useFriendStore = create((set, get) => ({
   getFriends: async () => {
     try {
       const res = await axiosInstance.get("/friends/list");
-      set({ friends: res.data });
+      const friends = Array.isArray(res.data) ? res.data : [];
+      set({ friends });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch friends:", error.message);
+      set({ friends: [] });
     }
   },
 
   getFriendRequests: async () => {
     try {
       const res = await axiosInstance.get("/friends/requests");
-      set({ friendRequests: res.data });
+      const friendRequests = Array.isArray(res.data) ? res.data : [];
+      set({ friendRequests });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch friend requests:", error.message);
+      set({ friendRequests: [] });
     }
   },
 
   getSentRequests: async () => {
     try {
       const res = await axiosInstance.get("/friends/sent");
-      set({ sentRequests: res.data });
+      const sentRequests = Array.isArray(res.data) ? res.data : [];
+      set({ sentRequests });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch sent requests:", error.message);
+      set({ sentRequests: [] });
     }
   },
 
@@ -41,9 +47,11 @@ export const useFriendStore = create((set, get) => ({
     set({ isSearching: true });
     try {
       const res = await axiosInstance.get(`/friends/search?query=${query}`);
-      set({ searchResults: res.data });
+      const searchResults = Array.isArray(res.data) ? res.data : [];
+      set({ searchResults });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to search users:", error.message);
+      set({ searchResults: [] });
     } finally {
       set({ isSearching: false });
     }

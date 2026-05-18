@@ -14,10 +14,16 @@ import callRoute from "./routes/call.route.js";
 
 dotenv.config();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

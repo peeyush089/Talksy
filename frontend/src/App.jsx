@@ -18,7 +18,7 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { ZIM } from "zego-zim-web";
 
 const APP_ID = 2066757958;
-const SERVER_SECRET = "8220352f2600c0028bf0fa4c8f93e8f1"; // ← your exact Server Secret
+const SERVER_SECRET = "8220352f2600c0028bf0fa4c8f93e8f1";
 
 export let zpGlobal = null;
 
@@ -27,57 +27,51 @@ const App = () => {
   const { theme } = useThemeStore();
   const zpInitialized = useRef(false);
 
-  useEffect(() => { checkAuth(); }, [checkAuth]);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   useEffect(() => {
     if (!authUser || zpInitialized.current) return;
 
-    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      APP_ID,
-      SERVER_SECRET,
-      "lobby_" + authUser._id,
-      authUser._id,
-      authUser.fullName
-    );
+    // ✅ SAFETY CHECK
+    if (!authUser._id || !authUser.fullName) {
+      console.log("User data not ready:", authUser);
+      return;
+    }
 
-    const zp = ZegoUIKitPrebuilt.create(kitToken);
-    zp.addPlugins({ ZIM });
-    zpGlobal = zp;
-    zpInitialized.current = true;
+    try {
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        APP_ID,
+        SERVER_SECRET,
+        "lobby_" + authUser._id,
+        String(authUser._id), // ✅ IMPORTANT
+        authUser.fullName
+      );
 
-    zp.setCallInvitationConfig({
-      // Auto-dismiss incoming popup when caller cancels
-      onIncomingCallCancelled: (callID, caller) => {
-        // Zegocloud handles UI dismiss automatically
-      },
+      const zp = ZegoUIKitPrebuilt.create(kitToken);
 
-      // Auto-dismiss when call ends on either side
-      onCallEnd: (callID, reason, duration) => {
-        // Zegocloud handles UI dismiss automatically
-      },
+      if (!zp) {
+        console.error("Zego initialization failed");
+        return;
+      }
 
-      // Outgoing — other user busy
-      onOutgoingCallRejected: (callID, callee) => {
-        if (callee?.reason === "busy") {
-          toast.error(
-            `${callee?.userName || "User"} is on another call. Try again later.`,
-            { icon: "📵", duration: 4000 }
-          );
-        } else {
-          toast(`${callee?.userName || "User"} declined the call.`, { icon: "📵" });
-        }
-      },
+      zp.addPlugins({ ZIM });
+      zpGlobal = zp;
+      zpInitialized.current = true;
 
-      // Outgoing — no answer
-      onOutgoingCallTimeout: (callID, callees) => {
-        toast(`No answer from ${callees?.[0]?.userName || "user"}.`, { icon: "⏱️" });
-      },
+      zp.setCallInvitationConfig({
+        onOutgoingCallRejected: (callID, callee) => {
+          toast.error(`${callee?.userName || "User"} rejected the call`);
+        },
+        onOutgoingCallTimeout: () => {
+          toast("User not answering");
+        },
+      });
 
-      // Incoming — caller cancelled before we answered
-      onIncomingCallTimeout: (callID, caller) => {
-        // Zegocloud dismisses the popup automatically
-      },
-    });
+    } catch (err) {
+      console.error("Zego Error:", err);
+    }
 
     return () => {
       zpGlobal = null;

@@ -75,8 +75,8 @@ const Sidebar = () => {
   }, [searchQuery]);
 
   const displayFriends = showOnlineOnly
-    ? sortedFriends.filter((u) => (onlineUsers || []).includes(u._id))
-    : sortedFriends;
+    ? (Array.isArray(sortedFriends) ? sortedFriends : []).filter((u) => (onlineUsers || []).includes(u._id))
+    : (Array.isArray(sortedFriends) ? sortedFriends : []);
 
   const isFriend = (userId) => friends.some((f) => f._id === userId);
   const isPending = (userId) => sentRequests.some((r) => r._id === userId);
