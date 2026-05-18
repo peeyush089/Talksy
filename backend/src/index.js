@@ -6,49 +6,68 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import friendRoutes from "./routes/friend.route.js";
-import groupRoutes from "./routes/group.route.js"; // ✅ group routes
+import groupRoutes from "./routes/group.route.js";
+import callRoute from "./routes/call.route.js";
 
 import { app, server } from "./lib/socket.js";
 import { connectDB } from "./lib/db.js";
-import callRoute from "./routes/call.route.js";
 
 dotenv.config();
 
+// ✅ Allowed frontend URLs
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  process.env.FRONTEND_URL,
   "https://talksy-taupe.vercel.app",
+  "https://talksy-dagugfder-peeyush089s-projects.vercel.app",
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(cookieParser());
+// ✅ CORS CONFIG (FIXED)
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
+    // allow requests like Postman / mobile apps (no origin)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error(`CORS origin denied: ${origin}`));
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(null, false); // ❗ important change (no error throw)
   },
   credentials: true,
 }));
 
+// ✅ VERY IMPORTANT: handle preflight requests
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+// ✅ Middlewares
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cookieParser());
+
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/friends", friendRoutes);
-app.use("/api/groups", groupRoutes); // ✅
+app.use("/api/groups", groupRoutes);
 app.use("/api/call", callRoute);
 
 const PORT = process.env.PORT || 5001;
 
+// ✅ Error handler
 server.on("error", (error) => {
   console.error("Server error:", error);
   if (error.code === "EADDRINUSE") {
-    console.error(`Port ${PORT} is already in use. Please stop the running process or use another PORT.`);
+    console.error(`Port ${PORT} is already in use.`);
   }
   process.exit(1);
 });
 
+// ✅ Start server
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
   connectDB();
