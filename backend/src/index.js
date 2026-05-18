@@ -23,17 +23,23 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-// ✅ CORS CONFIG (FIXED)
+
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests like Postman / mobile apps (no origin)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    // ✅ allow localhost
+    if (origin.includes("localhost")) {
       return callback(null, true);
     }
 
-    return callback(null, false); // ❗ important change (no error throw)
+    // ✅ allow ALL vercel domains (important fix)
+    if (origin.includes("vercel.app")) {
+      return callback(null, true);
+    }
+
+    // ❌ block others
+    return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
 }));
