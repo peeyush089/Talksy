@@ -5,7 +5,13 @@ import cloudinary from "../lib/cloudinary.js";
 
 const generateToken = (userId, res) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
-  res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });
+  const isProduction = process.env.NODE_ENV === "production";
+
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
 };
 
 export const signup = async (req, res) => {
@@ -46,6 +52,7 @@ export const login = async (req, res) => {
     generateToken(user._id, res);
     res.status(200).json(user);
   } catch (error) {
+    console.error("Auth login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

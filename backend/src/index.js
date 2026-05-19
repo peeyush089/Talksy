@@ -14,6 +14,14 @@ import { connectDB } from "./lib/db.js";
 
 dotenv.config();
 
+const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
+for (const envName of requiredEnv) {
+  if (!process.env[envName]) {
+    console.error(`Missing required env var: ${envName}`);
+    process.exit(1);
+  }
+}
+
 // ✅ CORS
 app.use(cors({
   origin: (origin, callback) => {
