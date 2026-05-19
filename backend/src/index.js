@@ -29,32 +29,28 @@ if (process.env.FRONTEND_URL) {
 }
 console.log("Allowed CORS origins:", allowedOrigins);
 
-// ✅ CORS with credentials support
+// ✅ CORS with credentials support - simplified for reliability
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins, // Pass array directly instead of callback
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    optionsSuccessStatus: 200, // Ensure preflight returns 200
   })
 );
 
-// ✅ Preflight - Ensure credentials for cross-origin requests
+// ✅ Additional preflight handler for extra safety
 app.options("*", (req, res) => {
   const origin = req.headers.origin;
+  // Always set CORS headers for preflight
   if (!origin || allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin || "*");
+    res.header("Access-Control-Allow-Origin", origin || allowedOrigins[0]);
     res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookie");
   }
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookie");
-  res.sendStatus(200);
+  res.sendStatus(200); // Always return 200 for preflight
 });
 
 // ✅ Middlewares

@@ -20,7 +20,7 @@ console.log("Socket.IO allowed origins:", allowedOrigins);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: allowedOrigins, // Pass array directly
     credentials: true,
     methods: ["GET", "POST"],
   },
