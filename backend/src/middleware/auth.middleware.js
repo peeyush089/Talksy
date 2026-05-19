@@ -5,7 +5,14 @@ export const protectRoute = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
 
+    console.log("Auth check - cookies received:", {
+      allCookies: Object.keys(req.cookies),
+      hasJwt: !!token,
+      origin: req.headers.origin,
+    });
+
     if (!token) {
+      console.log("No JWT token found in cookies");
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -20,6 +27,7 @@ export const protectRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log("Auth verification error:", error?.message || error);
     res.status(401).json({ message: "Invalid token" });
   }
 };

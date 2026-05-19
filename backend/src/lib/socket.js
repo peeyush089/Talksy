@@ -1,19 +1,30 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
 
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// ✅ Build dynamic origin list for Socket.IO CORS
+const allowedOrigins = ["http://localhost:5173", "http://localhost:3000"];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+console.log("Socket.IO allowed origins:", allowedOrigins);
+
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://talksy-taupe.vercel.app",
-    ],
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
     credentials: true,
+    methods: ["GET", "POST"],
   },
+  maxHttpBufferSize: 50 * 1024 * 1024,
 });
 
 const userSocketMap = {};

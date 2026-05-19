@@ -7,11 +7,21 @@ const generateToken = (userId, res) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
   const isProduction = process.env.NODE_ENV === "production";
 
-  res.cookie("jwt", token, {
+  const cookieOptions = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction, // HTTPS only in production
+    sameSite: isProduction ? "none" : "lax", // "none" for cross-site in production, "lax" for development
+    path: "/", // Cookie available to all paths
+  };
+
+  console.log("Setting JWT cookie with options:", { 
+    isProduction, 
+    secure: cookieOptions.secure, 
+    sameSite: cookieOptions.sameSite,
+    path: cookieOptions.path,
   });
+
+  res.cookie("jwt", token, cookieOptions);
 };
 
 export const signup = async (req, res) => {
