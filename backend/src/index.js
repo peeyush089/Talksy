@@ -59,7 +59,16 @@ app.use("/api/call", callRoute);
 
 // ✅ Global error logger
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error("Unhandled error:", err?.stack || err);
+  // Ensure CORS headers are present even when an internal error occurs
+  try {
+    res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookie");
+  } catch (e) {
+    console.error("Failed to set error CORS headers:", e?.stack || e);
+  }
   res.status(500).json({ message: "Server error" });
 });
 

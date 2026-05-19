@@ -35,7 +35,7 @@ export const signup = async (req, res) => {
     generateToken(user._id, res);
     res.status(201).json(user);
   } catch (error) {
-    console.log(error);
+    console.error("Auth signup error:", error?.stack || error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -52,7 +52,7 @@ export const login = async (req, res) => {
     generateToken(user._id, res);
     res.status(200).json(user);
   } catch (error) {
-    console.error("Auth login error:", error);
+    console.error("Auth login error:", error?.stack || error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -86,7 +86,7 @@ export const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log(error);
+    console.error("Auth updateProfile error:", error?.stack || error);
     res.status(500).json({ message: "Server error" });
   }
 };
