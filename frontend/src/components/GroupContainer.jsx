@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Info, Crown, Phone, Video } from "lucide-react";
+import { X, Info, Crown, Phone, Video, ArrowLeft } from "lucide-react";
 import { useGroupStore } from "../store/useGroupStore";
 import { useAuthStore } from "../store/useAuthStore";
 import GroupInfoModal from "./GroupInfoModal";
@@ -155,13 +155,18 @@ const GroupContainer = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden w-full min-w-0">
+    <div className="flex-1 flex flex-col overflow-hidden w-full min-w-0 h-full">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 px-3 py-2.5 border-b border-base-300 bg-base-100 shrink-0 w-full">
-        {/* Close */}
-        <button onClick={() => setSelectedGroup(null)} className="btn btn-ghost btn-sm btn-circle">
-          <X className="size-5" />
+      <div className="flex items-center gap-3 px-3 py-2.5 border-b border-base-300 bg-base-100 shrink-0 w-full sticky top-0 z-50">
+        {/* Back / Close — ArrowLeft on mobile, X on desktop */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedGroup(null); }}
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedGroup(null); }}
+          className="btn btn-ghost btn-sm btn-circle"
+        >
+          <X className="size-5 hidden md:block" />
+          <ArrowLeft className="size-5 block md:hidden" />
         </button>
 
         {/* Group pic */}
@@ -206,7 +211,7 @@ const GroupContainer = () => {
       </div>
 
       {/* ── Messages ───────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1">
+      <div className="flex-1 overflow-y-auto p-4 space-y-1" style={{ touchAction: "pan-y", overscrollBehaviorX: "none" }}>
         {isGroupMessagesLoading ? (
           <div className="flex items-center justify-center h-full">
             <span className="loading loading-spinner loading-md text-primary" />
