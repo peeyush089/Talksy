@@ -57,6 +57,12 @@ app.use("/api/friends", friendRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/call", callRoute);
 
+// ✅ Global error logger
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ message: "Server error" });
+});
+
 const PORT = process.env.PORT || 5001;
 
 // ✅ Error handler
