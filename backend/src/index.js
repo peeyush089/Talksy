@@ -23,18 +23,15 @@ for (const envName of requiredEnv) {
 }
 
 // ✅ CORS
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (origin.includes("localhost")) return callback(null, true);
-    if (origin.includes("vercel.app")) return callback(null, true);
-    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://talksy-taupe.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 // ✅ Preflight
 app.options("*", (req, res) => {
