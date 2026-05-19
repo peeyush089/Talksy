@@ -3,7 +3,6 @@ import http from "http";
 import express from "express";
 
 const app = express();
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -17,14 +16,10 @@ const io = new Server(server, {
   },
 });
 
-export function getReceiverSocketId(userId) {
-  return userSocketMap[userId];
-}
-
 const userSocketMap = {};
 
 io.on("connection", (socket) => {
-  console.log("A user connected", socket.id);
+  console.log("User connected", socket.id);
 
   const userId = socket.handshake.query.userId;
 
@@ -35,7 +30,7 @@ io.on("connection", (socket) => {
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected", socket.id);
+    console.log("User disconnected", socket.id);
 
     delete userSocketMap[userId];
 
