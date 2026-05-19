@@ -16,13 +16,11 @@ export const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
-
       set({ authUser: res.data });
-
       get().connectSocket();
     } catch (error) {
       console.log("Check auth error:", error);
-
+      localStorage.removeItem("token");
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -33,11 +31,9 @@ export const useAuthStore = create((set, get) => ({
   signup: async (data) => {
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-
-      set({ authUser: res.data });
-
+      localStorage.setItem("token", res.data.token);
+      set({ authUser: res.data.user });
       toast.success("Signup successful");
-
       get().connectSocket();
     } catch (error) {
       toast.error(error?.response?.data?.message || "Signup failed");
@@ -48,11 +44,9 @@ export const useAuthStore = create((set, get) => ({
   login: async (data) => {
     try {
       const res = await axiosInstance.post("/auth/login", data);
-
-      set({ authUser: res.data });
-
+      localStorage.setItem("token", res.data.token);
+      set({ authUser: res.data.user });
       toast.success("Login successful");
-
       get().connectSocket();
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed");
@@ -63,14 +57,9 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
-
+      localStorage.removeItem("token");
       get().disconnectSocket();
-
-      set({
-        authUser: null,
-        onlineUsers: [],
-      });
-
+      set({ authUser: null, onlineUsers: [] });
       toast.success("Logged out");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Logout failed");
@@ -81,21 +70,11 @@ export const useAuthStore = create((set, get) => ({
   updateProfile: async (data) => {
     try {
       set({ isUpdatingProfile: true });
-
-      const res = await axiosInstance.put(
-        "/auth/update-profile",
-        data
-      );
-
-      set({
-        authUser: res.data,
-      });
-
+      const res = await axiosInstance.put("/auth/update-profile", data);
+      set({ authUser: res.data });
       toast.success("Profile updated successfully");
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Profile update failed"
-      );
+      toast.error(error?.response?.data?.message || "Profile update failed");
     } finally {
       set({ isUpdatingProfile: false });
     }
@@ -104,27 +83,22 @@ export const useAuthStore = create((set, get) => ({
   // ================= SOCKET CONNECT =================
   connectSocket: () => {
     const { authUser } = get();
-
     if (!authUser || get().socket?.connected) return;
 
+    const token = localStorage.getItem("token");
+
     const socket = io(SOCKET_URL, {
-      query: {
-        userId: authUser._id,
-      },
-
+      query: { userId: authUser._id },
+      auth: { token },           // send token to socket too
       withCredentials: true,
-
       transports: ["websocket"],
     });
 
     socket.connect();
-
-    set({ socket: socket });
+    set({ socket });
 
     socket.on("getOnlineUsers", (userIds) => {
-      set({
-        onlineUsers: userIds,
-      });
+      set({ onlineUsers: userIds });
     });
   },
 
@@ -133,7 +107,6 @@ export const useAuthStore = create((set, get) => ({
     if (get().socket?.connected) {
       get().socket.disconnect();
     }
-
     set({ socket: null });
   },
 }));
