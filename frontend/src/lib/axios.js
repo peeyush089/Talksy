@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://talksy-voh9.onrender.com/api",
-  withCredentials: true,
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  withCredentials: true, // VERY IMPORTANT
 });
