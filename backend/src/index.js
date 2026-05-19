@@ -14,41 +14,28 @@ import { connectDB } from "./lib/db.js";
 
 dotenv.config();
 
-// ✅ Allowed frontend URLs
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://talksy-taupe.vercel.app",
-  "https://talksy-dagugfder-peeyush089s-projects.vercel.app",
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-
+// ✅ CORS
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-
-    // ✅ allow localhost
-    if (origin.includes("localhost")) {
-      return callback(null, true);
-    }
-
-    // ✅ allow ALL vercel domains (important fix)
-    if (origin.includes("vercel.app")) {
-      return callback(null, true);
-    }
-
-    // ❌ block others
+    if (origin.includes("localhost")) return callback(null, true);
+    if (origin.includes("vercel.app")) return callback(null, true);
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
     return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
 }));
 
-// ✅ VERY IMPORTANT: handle preflight requests
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+// ✅ Preflight
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization,Cookie");
+  res.sendStatus(200);
+});
 
 // ✅ Middlewares
 app.use(express.json({ limit: "50mb" }));
