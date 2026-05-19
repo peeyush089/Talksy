@@ -20,11 +20,16 @@ console.log("Socket.IO allowed origins:", allowedOrigins);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins, // Pass array directly
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (origin.includes("localhost")) return callback(null, true);
+      if (origin.includes("vercel.app")) return callback(null, true);
+      if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
     methods: ["GET", "POST"],
-  },
-  maxHttpBufferSize: 50 * 1024 * 1024,
+  }
 });
 
 const userSocketMap = {};
