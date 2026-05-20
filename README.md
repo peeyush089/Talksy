@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="screenshots/chat.png" alt="TALKSY Banner" width="100%" style="border-radius:12px"/>
+<img src="screenshots/banner.png" alt="TALKSY Banner" width="100%" style="border-radius:12px"/>
 
 <br/><br/>
 
