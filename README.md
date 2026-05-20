@@ -1,7 +1,6 @@
 <div align="center">
 
-<img src="screenshots/banner.png" alt="TALKSY Banner" width="100%" style="border-radius:12px"/>
-
+<img src="https://raw.githubusercontent.com/peeyush089/Talksy/main/screenshots/banner.png" alt="TALKSY Banner" width="100%"/>
 <br/><br/>
 
 # 💬 TALKSY
