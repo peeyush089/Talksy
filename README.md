@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/peeyush089/Talksy/main/screenshots/banner.png" alt="TALKSY Banner" width="100%"/>
+<img src="screenshosts/banner.png" alt="TALKSY Banner" width="100%"/>
 <br/><br/>
 
 # 💬 TALKSY
@@ -42,9 +42,9 @@
     <td align="center"><b>👤 Profile Page</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/login_png.png" width="100%" alt="Login"/></td>
-    <td><img src="screenshots/chat.png" width="100%" alt="Chat"/></td>
-    <td><img src="screenshots/profile.png" width="100%" alt="Profile"/></td>
+    <td><img src="screenshosts/loginwindow.png" width="100%" alt="Login"/></td>
+    <td><img src="screenshosts/chatwindow.png" width="100%" alt="Chat"/></td>
+    <td><img src="screenshosts/profilewindow.png" width="100%" alt="Profile"/></td>
   </tr>
 </table>
 
