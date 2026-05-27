@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User, Pencil, Check, X, AtSign, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 /* ── Reusable inline-edit field ── */
 const EditableField = ({ icon: Icon, label, value, field, onSave, isUpdatingProfile }) => {
@@ -111,6 +112,7 @@ const EditableField = ({ icon: Icon, label, value, field, onSave, isUpdatingProf
    ProfilePage
 ═══════════════════════════════════════ */
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
@@ -158,9 +160,18 @@ const ProfilePage = () => {
         <div className="bg-base-300 rounded-xl p-6 space-y-8">
 
           {/* Header */}
-          <div className="text-center">
+          <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Profile</h1>
-            <p className="mt-2 text-sm text-zinc-400">
+            <button
+              onClick={() => navigate("/")}
+              className="btn btn-ghost btn-circle"
+              title="Back to home"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-zinc-400">
               Click the <Pencil className="inline w-3 h-3 mx-1" /> pencil to edit any field
             </p>
           </div>
